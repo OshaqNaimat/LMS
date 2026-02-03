@@ -1,4 +1,10 @@
-import { Routes, Route, Navigate } from "react-router-dom";
+// import { Routes, Route, Navigate } from "react-router-dom";
+import {
+  BrowserRouter as Router,
+  Routes,
+  Route,
+  Navigate,
+} from "react-router-dom";
 import { AuthProvider } from "./context/AuthContext";
 import { ROLES } from "./utils/constants";
 import ProtectedRoute from "./components/common/ProtectedRoute";
@@ -30,53 +36,68 @@ import Profile from "./pages/Profile";
 function App() {
   return (
     <AuthProvider>
-      <Routes>
-        {/* Public Routes */}
-        <Route path="/login" element={<Login />} />
-        <Route path="/register" element={<Register />} />
-        <Route path="/forgot-password" element={<ForgotPassword />} />
+      <Router>
+        <Routes>
+          {/* Public Routes */}
+          <Route path="/login" element={<Login />} />
+          <Route path="/register" element={<Register />} />
+          <Route path="/forgot-password" element={<ForgotPassword />} />
 
-        {/* Protected Routes */}
-        <Route
-          element={
-            <ProtectedRoute
-              allowedRoles={[ROLES.ADMIN, ROLES.TEACHER, ROLES.STUDENT]}
-            />
-          }
-        >
-          <Route element={<Layout />}>
-            {/* Redirect based on role */}
-            <Route index element={<Navigate to="/admin/dashboard" replace />} />
+          {/* Protected Routes */}
+          <Route
+            element={
+              <ProtectedRoute
+                allowedRoles={[ROLES.ADMIN, ROLES.TEACHER, ROLES.STUDENT]}
+              />
+            }
+          >
+            <Route element={<Layout />}>
+              {/* Redirect based on role */}
+              <Route
+                index
+                element={<Navigate to="/admin/dashboard" replace />}
+              />
 
-            {/* Admin Routes */}
-            <Route element={<ProtectedRoute allowedRoles={[ROLES.ADMIN]} />}>
-              <Route path="admin/dashboard" element={<AdminDashboard />} />
-              <Route path="admin/users" element={<ManageUsers />} />
-              <Route path="admin/settings" element={<SystemSettings />} />
+              {/* Admin Routes */}
+              <Route element={<ProtectedRoute allowedRoles={[ROLES.ADMIN]} />}>
+                <Route path="admin/dashboard" element={<AdminDashboard />} />
+                <Route path="admin/users" element={<ManageUsers />} />
+                <Route path="admin/settings" element={<SystemSettings />} />
+              </Route>
+
+              {/* Teacher Routes */}
+              <Route
+                element={<ProtectedRoute allowedRoles={[ROLES.TEACHER]} />}
+              >
+                <Route
+                  path="teacher/dashboard"
+                  element={<TeacherDashboard />}
+                />
+                <Route path="teacher/classes" element={<ManageClasses />} />
+                <Route path="teacher/grades" element={<GradeAssignments />} />
+              </Route>
+
+              {/* Student Routes */}
+              <Route
+                element={<ProtectedRoute allowedRoles={[ROLES.STUDENT]} />}
+              >
+                <Route
+                  path="student/dashboard"
+                  element={<StudentDashboard />}
+                />
+                <Route path="student/courses" element={<MyCourses />} />
+                <Route path="student/grades" element={<MyGrades />} />
+              </Route>
+
+              {/* Common Routes */}
+              <Route path="profile" element={<Profile />} />
             </Route>
-
-            {/* Teacher Routes */}
-            <Route element={<ProtectedRoute allowedRoles={[ROLES.TEACHER]} />}>
-              <Route path="teacher/dashboard" element={<TeacherDashboard />} />
-              <Route path="teacher/classes" element={<ManageClasses />} />
-              <Route path="teacher/grades" element={<GradeAssignments />} />
-            </Route>
-
-            {/* Student Routes */}
-            <Route element={<ProtectedRoute allowedRoles={[ROLES.STUDENT]} />}>
-              <Route path="student/dashboard" element={<StudentDashboard />} />
-              <Route path="student/courses" element={<MyCourses />} />
-              <Route path="student/grades" element={<MyGrades />} />
-            </Route>
-
-            {/* Common Routes */}
-            <Route path="profile" element={<Profile />} />
           </Route>
-        </Route>
 
-        {/* Fallback */}
-        <Route path="*" element={<Navigate to="/login" replace />} />
-      </Routes>
+          {/* Fallback */}
+          <Route path="*" element={<Navigate to="/login" replace />} />
+        </Routes>
+      </Router>
     </AuthProvider>
   );
 }
